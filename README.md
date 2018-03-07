@@ -15,7 +15,9 @@ Load a LBD, MOM or TMD file in the MOD-filechooser and a TIX file in the TEX-fil
 * The < and > keys switch between the object within a TMD file or the animations when in 'combined' mode.
 * The ? key switches between normal and wireframe mode.
 * The P key goes to the next frame when viewing an animation.
-
 * Drag with left mouse button to rotate.
 * Drag with middle mouse button (or scroll) to zoom.
 * Drag with right mouse button (or use the arrow keys) to pan.
+
+## Credits
+Thanks to figglewatts, his [libLSD](https://github.com/figglewatts/libLSD) and his [LSDview](https://github.com/figglewatts/LSDview) for some info on the file formats.
