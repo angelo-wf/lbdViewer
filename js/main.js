@@ -452,6 +452,7 @@ window.onkeydown = function(e) {
       set = !set;
       rerender();
       break;
+    case "]":
     case "'":
       ind++;
       if(ind >= getMaxes()[0]) {
@@ -461,6 +462,7 @@ window.onkeydown = function(e) {
       }
       rerender();
       break;
+    case "[":
     case ";":
       ind--;
       if(ind < 0) {
