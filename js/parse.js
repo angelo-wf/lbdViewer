@@ -54,20 +54,23 @@ function doAnim() {
         //tra/rot/scl
         if(packet.diff) {
           if(packet.hasRot) {
-            animState.parts[packet.objectId].rotateX(degToRad(packet.rotX / 4096));
-            animState.parts[packet.objectId].rotateY(degToRad(packet.rotY / 4096));
-            animState.parts[packet.objectId].rotateZ(degToRad(packet.rotZ / 4096));
+            animState.parts[packet.objectId].rotateX(degToRad(packet.rotX));
+            animState.parts[packet.objectId].rotateY(degToRad(packet.rotY));
+            animState.parts[packet.objectId].rotateZ(degToRad(packet.rotZ));
           }
           if(packet.hasScl) {
             let oldRot = animState.parts[packet.objectId].rotation.clone();
             animState.parts[packet.objectId].rotation.set(0, 0, 0);
             animState.parts[packet.objectId].scale.set(
-              animState.parts[packet.objectId].scale.x * (packet.sclX / 4096),
-              animState.parts[packet.objectId].scale.y * (packet.sclY / 4096),
-              animState.parts[packet.objectId].scale.z * (packet.sclZ / 4096)
+              animState.parts[packet.objectId].scale.x * (packet.sclX),
+              animState.parts[packet.objectId].scale.y * (packet.sclY),
+              animState.parts[packet.objectId].scale.z * (packet.sclZ)
             );
-            //Math.abs() on the scales for fixing stg5M013 spaceship
-            //but breaks stg5M022 car
+            //when negative scaling, also invert if 1 or 3 negatives
+            //fixes bugs with stg5 entities
+            if(packet.sclX * packet.sclY * packet.sclZ < 0) {
+              InvertObject(animState.parts[packet.objectId]);
+            }
             animState.parts[packet.objectId].setRotationFromEuler(oldRot);
           }
           if(packet.hasTra) {
@@ -81,19 +84,22 @@ function doAnim() {
         } else {
           if(packet.hasRot) {
             animState.parts[packet.objectId].rotation.set(
-              degToRad(packet.rotX / 4096),
-              degToRad(packet.rotY / 4096),
-              degToRad(packet.rotZ / 4096)
+              degToRad(packet.rotX),
+              degToRad(packet.rotY),
+              degToRad(packet.rotZ)
             );
           }
           if(packet.hasScl) {
             let oldRot = animState.parts[packet.objectId].rotation.clone();
             animState.parts[packet.objectId].rotation.set(0, 0, 0);
             animState.parts[packet.objectId].scale.set(
-              packet.sclX / 4096,
-              packet.sclY / 4096,
-              packet.sclZ / 4096
+              packet.sclX,
+              packet.sclY,
+              packet.sclZ
             );
+            if(packet.sclX < 0 || packet.sclY < 0 || packet.sclZ < 0) {
+              console.log("Warning: Absolute negative scale in frame\n0x" + animState.frame.toString(16));
+            }
             animState.parts[packet.objectId].setRotationFromEuler(oldRot);
           }
           if(packet.hasTra) {
@@ -165,4 +171,34 @@ function drawTile(tile, i, master) {
 
 function degToRad(deg) {
   return deg * Math.PI / 180;
+}
+
+function InvertObject(obj) {
+  for(let i = 0; i < obj.children.length; i++) {
+    if(obj.children[i].geometry) {
+      invertGeometry(obj.children[i].geometry);
+    }
+    if(obj.children[i].children) {
+      InvertObject(obj.children[i]);
+    }
+  }
+}
+
+function invertGeometry(geo) {
+  for(let i = 0; i < geo.faces.length; i++) {
+    let temp = geo.faces[i].clone();
+    geo.faces[i].a = temp.c;
+    geo.faces[i].c = temp.a;
+    temp = geo.faces[i].vertexColors[0].clone();
+    geo.faces[i].vertexColors[0] = geo.faces[i].vertexColors[2].clone();
+    geo.faces[i].vertexColors[2] = temp;
+    //normals need to be flipped too if they are used
+  }
+  geo.elementsNeedUpdate = true;
+  for(let i = 0; i < geo.faceVertexUvs[0].length; i++) {
+    let temp = geo.faceVertexUvs[0][i][0].clone();
+    geo.faceVertexUvs[0][i][0] = geo.faceVertexUvs[0][i][2].clone();
+    geo.faceVertexUvs[0][i][2] = temp;
+  }
+  geo.uvsNeedUpdate = true;
 }

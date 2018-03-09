@@ -39,14 +39,14 @@ function TODPacket(b) {
       this.hasScl = (this.flag & 4) > 0;
       this.hasTra = (this.flag & 8) > 0;
       if(this.hasRot) {
-        this.rotX = uToSl(b.readLong());
-        this.rotY = uToSl(b.readLong());
-        this.rotZ = uToSl(b.readLong());
+        this.rotX = uToSl(b.readLong()) / 4096;
+        this.rotY = uToSl(b.readLong()) / 4096;
+        this.rotZ = uToSl(b.readLong()) / 4096;
       }
       if(this.hasScl) {
-        this.sclX = uToS(b.readShort());
-        this.sclY = uToS(b.readShort());
-        this.sclZ = uToS(b.readShort());
+        this.sclX = uToS(b.readShort()) / 4096;
+        this.sclY = uToS(b.readShort()) / 4096;
+        this.sclZ = uToS(b.readShort()) / 4096;
         b.readShort();
       }
       if(this.hasTra) {

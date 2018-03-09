@@ -81,12 +81,6 @@ function fixCols(col, yes) {
   let r = (col & 0xff0000) >> 16;
   let g = (col & 0xff00) >> 8;
   let b = col & 0xff;
-  /*r += 128;
-  r = r > 255 ? 255 : r;
-  g += 128;
-  g = g > 255 ? 255 : g;
-  b += 128;
-  b = b > 255 ? 255 : b;*/
   r = scaleCol(r);
   g = scaleCol(g);
   b = scaleCol(b);
