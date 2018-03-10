@@ -1,6 +1,12 @@
 
 let scene, camera, renderer, texture;
-let file, spc = false, num = 0, ind = 0, set = true;
+let file;
+let viewState = {
+  comb: false,
+  file: 0,
+  obj: 0,
+  wire: false
+};
 let ctx = el("vram").getContext("2d"), pixelData;
 let globalScale = 1 / 2048, globalOpacity = 0.6;
 let animState = {
@@ -70,9 +76,9 @@ function loadModel(b, type) {
   } else if(type == 2) {
     file = handleModel(new LBD(b));
   }
-  num = 0;
-  ind = 0;
-  spc = false;
+  viewState.obj = 0;
+  viewState.file = 0;
+  viewState.comb = false;
   resetAnimState();
   if(scene == undefined) {
     init();
@@ -83,12 +89,12 @@ function loadModel(b, type) {
 
 //gets the maximum ind and num for the loaded file and state
 function getMaxes() {
-  if(spc) {
-    let fir = ind >= file.comb.length ? 0 : file.comb[ind].count;
+  if(viewState.comb) {
+    let fir = viewState.file >= file.comb.length ? 0 : file.comb[viewState.file].count;
     let sec = file.comb.length;
     return [sec, fir];
   } else {
-    let fir = ind >= file.tmds.length ? 0 : file.tmds[ind].objects.length;
+    let fir = viewState.file >= file.tmds.length ? 0 : file.tmds[viewState.file].objects.length;
     let sec = file.tmds.length;
     return [sec, fir];
   }
@@ -127,8 +133,8 @@ function init() {
 //render the scene, when moving the camera or animating
 function render() {
   renderer.render(scene, camera);
-  if(spc && file.comb[ind].type == "anim") {
-    let frames = file.comb[ind].mom.tods[num].frames.length;
+  if(viewState.comb && file.comb[viewState.file].type == "anim") {
+    let frames = file.comb[viewState.file].mom.tods[viewState.obj].frames.length;
     let cur = animState.frame + 1;
     el("frames").textContent = ", Frame: " + cur + " / " + frames;
   } else {
@@ -141,17 +147,17 @@ function rerender() {
   clearScene(scene);
   //light example in three.js examples -> Minecraft example
   resetAnimState();
-  if(!spc) {
+  if(!viewState.comb) {
     doObj();
   } else {
     doSpc();
   }
-  let numTot = getMaxes()[1];
-  let indTot = getMaxes()[0];
-  el("info").textContent = "Combined: " + spc;
-  el("info").textContent += ", File: " + (ind + 1) + " / " + indTot;
-  el("info").textContent += ", Object: " + (num + 1) + " / " + numTot;
-  el("info").textContent += ", Wireframe: " + !set;
+  let objTot = getMaxes()[1];
+  let fileTot = getMaxes()[0];
+  el("info").textContent = "Combined: " + viewState.comb;
+  el("info").textContent += ", File: " + (viewState.file + 1) + " / " + fileTot;
+  el("info").textContent += ", Object: " + (viewState.obj + 1) + " / " + objTot;
+  el("info").textContent += ", Wireframe: " + viewState.wire;
   render();
 }
 
@@ -272,51 +278,51 @@ window.onresize = function() {
 window.onkeydown = function(e) {
   switch(e.key) {
     case ",":
-      num--;
-      num = num < 0 ? 0 : num;
+      viewState.obj--;
+      viewState.obj = viewState.obj < 0 ? 0 : viewState.obj;
       rerender();
       break;
     case ".":
-      num++;
-      num = num >= getMaxes()[1] ? getMaxes()[1] - 1 : num;
+      viewState.obj++;
+      viewState.obj = viewState.obj >= getMaxes()[1] ? getMaxes()[1] - 1 : viewState.obj;
       rerender();
       break;
     case "/":
-      set = !set;
+      viewState.wire = !viewState.wire;
       rerender();
       break;
     case "]":
     case "'":
-      ind++;
-      if(ind >= getMaxes()[0]) {
-        ind = getMaxes()[0] - 1;
+      viewState.file++;
+      if(viewState.file >= getMaxes()[0]) {
+        viewState.file = getMaxes()[0] - 1;
       } else {
-        num = 0;
+        viewState.obj = 0;
       }
       rerender();
       break;
     case "[":
     case ";":
-      ind--;
-      if(ind < 0) {
-        ind = 0;
+      viewState.file--;
+      if(viewState.file < 0) {
+        viewState.file = 0;
       } else {
-        num = 0;
+        viewState.obj = 0;
       }
       rerender();
       break;
     case "\\":
       if(file.comb && file.comb.length > 0) {
-        spc = !spc;
-        ind = 0;
-        num = 0;
+        viewState.comb = !viewState.comb;
+        viewState.file = 0;
+        viewState.obj = 0;
         rerender();
       } else {
-        spc = false;
+        viewState.comb = false;
       }
       break;
     case "p":
-      if(spc && file.comb[ind].type == "anim") {
+      if(viewState.comb && file.comb[viewState.file].type == "anim") {
         nextFrame();
       }
       break;

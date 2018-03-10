@@ -49,13 +49,13 @@ function handleModel(file) {
 
 //handles normal object viewing
 function doObj() {
-  let obj = createObj(file.tmds[ind], num, set);
+  let obj = createObj(file.tmds[viewState.file], viewState.obj, !viewState.wire);
   scene.add(obj);
 }
 
 //handles tilemap/animation viewing
 function doSpc() {
-  if(file.comb[ind].type == "tiles") {
+  if(file.comb[viewState.file].type == "tiles") {
     doTiles();
   } else {
     nextFrame();
@@ -71,11 +71,11 @@ function resetAnimState() {
 //goes to the next frame
 function nextFrame() {
   animState.frame++;
-  if(animState.frame >= file.comb[ind].mom.tods[num].frames.length) {
+  if(animState.frame >= file.comb[viewState.file].mom.tods[viewState.obj].frames.length) {
     animState.frame = 0;
     animState.parts = [];
     clearScene(scene);
-    if(file.comb[ind].mom.tods[num].frames.length > 1) {
+    if(file.comb[viewState.file].mom.tods[viewState.obj].frames.length > 1) {
       //skip frame 0 when looping
       doAnim();
       animState.frame++;
@@ -92,10 +92,10 @@ function doAnim() {
     //when first frame, create new group
     all = new THREE.Group();
   }
-  let tod = file.comb[ind].mom.tods[num];
+  let tod = file.comb[viewState.file].mom.tods[viewState.obj];
   for(let j = 0; j < tod.frames[animState.frame].packet.length; j++) {
     let packet = tod.frames[animState.frame].packet[j];
-    let tmd = file.comb[ind].mom.tmd;
+    let tmd = file.comb[viewState.file].mom.tmd;
     switch(packet.type) {
       case 0:
         //state change
@@ -167,7 +167,7 @@ function doAnim() {
         break;
       case 2:
         //set tmd part
-        animState.parts[packet.objectId].add(createObj(tmd, packet.tmdId - 1, set));
+        animState.parts[packet.objectId].add(createObj(tmd, packet.tmdId - 1, !viewState.wire));
         break;
       case 3:
         //set parent
@@ -204,8 +204,8 @@ function doAnim() {
 function doTiles() {
   let area = new THREE.Group();
   for(let i = 0; i < 400; i++) {
-    if(file.comb[ind].lbd.tiles[i].render) {
-      drawTile(file.comb[ind].lbd.tiles[i], i, area);
+    if(file.comb[viewState.file].lbd.tiles[i].render) {
+      drawTile(file.comb[viewState.file].lbd.tiles[i], i, area);
     }
   }
   scene.add(area);
@@ -213,14 +213,14 @@ function doTiles() {
 
 //draws a single 'tile'
 function drawTile(tile, i, master) {
-  let obj = createObj(file.tmds[0], tile.type, set);
+  let obj = createObj(file.tmds[0], tile.type, !viewState.wire);
   obj.translateX(-2048 * globalScale * (i % 20));
   obj.translateZ(-2048 * globalScale * Math.floor(i / 20));
   obj.translateY(globalScale * 2048 * tile.height);
   obj.rotateY((Math.PI / 2) * fixRot(tile.rotation));
   master.add(obj);
   if(tile.extraInd > -1) {
-    drawTile(file.comb[ind].lbd.extraTiles[tile.extraInd], i, master);
+    drawTile(file.comb[viewState.file].lbd.extraTiles[tile.extraInd], i, master);
   }
 }
 
