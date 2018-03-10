@@ -1,5 +1,6 @@
-function TIX(b) {
 
+//parses a TIX file
+function TIX(b) {
   this.chunkNum = b.readLong();
   this.chunkOffs = [];
   for(let i = 0; i < this.chunkNum; i++) {
@@ -30,6 +31,7 @@ function TIX(b) {
 
 }
 
+//parses a TIM file. Only supports type 9 (8-bit, with CLUT)
 function TIM(b) {
   this.id = b.readLong();
   this.flag = b.readLong();
@@ -76,6 +78,7 @@ function TIM(b) {
   }
 }
 
+//turns a 16-bit color to a array of colors + alpha
 function colToFull(num) {
   let a = (num & 0x8000) >> 15;
   let b = Math.round(((num & 0x7c00) >> 10) * 255 / 31);
@@ -93,6 +96,7 @@ function colToFull(num) {
   return [r, g, b, 1];
 }
 
+//turns a color array to a rgba(r, g, b, a) string, for drawing on canvas
 function colToString(colArr) {
   let str = "rgba(";
   str += colArr[0] + ", " + colArr[1] + ", " + colArr[2] + ", " + colArr[3];

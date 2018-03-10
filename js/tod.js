@@ -1,3 +1,5 @@
+
+//parses a TOD file
 function TOD(b) {
   this.id = b.readByte();
   this.version = b.readByte();
@@ -22,6 +24,7 @@ function TOD(b) {
   }
 }
 
+//parses a packet out of a TOD file
 function TODPacket(b) {
   this.objectId = b.readShort();
   this.flagType = b.readByte();

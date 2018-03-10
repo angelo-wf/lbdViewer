@@ -1,3 +1,5 @@
+
+//parses a TMD primitive (face)
 function TMDPrim(b) {
   this.olen = b.readByte();
   this.ilen = b.readByte();
@@ -525,10 +527,12 @@ function TMDPrim(b) {
       break;
   }
   this.page = this.tsb & 0x1f;
+  //turn original texture coords+page to direct coords in vram
   this.texXY = [];
   for(let i = 0; i < this.texUV.length; i++) {
     this.texXY[i] = pToC(this.texUV[i], this.page);
   }
+  //fix colors for PS1's 0x7f7f7f neutral color
   this.realCol = [];
   for(let i = 0; i < this.colors.length; i++) {
     this.realCol[i] = fixCols(this.colors[i], this.textured);

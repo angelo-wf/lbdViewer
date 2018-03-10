@@ -1,33 +1,82 @@
+
+//handles creating a 'file' with the loaded file
+function handleModel(file) {
+  //tmds: array of all tmds in the file
+  //comb: array of the tilemap + all aniamtion-sets
+  //data: parsed file itself
+  if(file.type == "TMD") {
+    return {
+      tmds: [file],
+      data: file
+    };
+  } else if(file.type == "MOM") {
+    let ret = {
+      tmds: [],
+      comb: [],
+      data: file
+    };
+    ret.tmds[0] = file.tmd;
+    ret.comb[0] = {
+      type: "anim",
+      count: file.todNum,
+      mom: file
+    }
+    return ret;
+  } else {
+    //LBD
+    let ret = {
+      tmds: [],
+      comb: [],
+      data: file
+    };
+    ret.tmds[0] = file.tileTmd;
+    ret.comb[0] = {
+      type: "tiles",
+      count: 1,
+      lbd: file
+    }
+    for(let i = 0; i < file.momCnt; i++) {
+      ret.tmds.push(file.moms[i].tmd);
+      ret.comb.push({
+        type: "anim",
+        count: file.moms[i].todNum,
+        mom: file.moms[i]
+      });
+    }
+    return ret;
+  }
+}
+
+//handles normal object viewing
 function doObj() {
   let obj = createObj(file.tmds[ind], num, set);
   scene.add(obj);
 }
 
+//handles tilemap/animation viewing
 function doSpc() {
   if(file.comb[ind].type == "tiles") {
     doTiles();
   } else {
-    next();
+    nextFrame();
   }
 }
 
+//resets the animation state
 function resetAnimState() {
   animState.parts = [];
   animState.frame = -1;
 }
 
-let animState = {
-  parts: [],
-  frame: -1
-};
-
-function next() {
+//goes to the next frame
+function nextFrame() {
   animState.frame++;
   if(animState.frame >= file.comb[ind].mom.tods[num].frames.length) {
     animState.frame = 0;
     animState.parts = [];
     clearScene(scene);
     if(file.comb[ind].mom.tods[num].frames.length > 1) {
+      //skip frame 0 when looping
       doAnim();
       animState.frame++;
     }
@@ -36,19 +85,21 @@ function next() {
   render();
 }
 
-
+//handles animation frame viewing
 function doAnim() {
   let all;
   if(animState.frame == 0) {
+    //when first frame, create new group
     all = new THREE.Group();
   }
   let tod = file.comb[ind].mom.tods[num];
   for(let j = 0; j < tod.frames[animState.frame].packet.length; j++) {
     let packet = tod.frames[animState.frame].packet[j];
-    let tmd = file.comb[ind].mom.tmds[0];
+    let tmd = file.comb[ind].mom.tmd;
     switch(packet.type) {
       case 0:
         //state change
+        //ignored for now
         break;
       case 1:
         //tra/rot/scl
@@ -136,6 +187,7 @@ function doAnim() {
         break;
       case 15:
         //reset??
+        //ignored
         break;
       default:
         console.log("Warning: Skipped TOD-packet\n0x" + packet.type.toString(16));
@@ -143,20 +195,23 @@ function doAnim() {
     }
   }
   if(animState.frame == 0) {
+    //add the new group to the scene
     scene.add(all);
   }
 }
 
+//handles tilemap viewing
 function doTiles() {
   let area = new THREE.Group();
   for(let i = 0; i < 400; i++) {
-    if(file.tiles[i].render) {
-      drawTile(file.tiles[i], i, area);
+    if(file.comb[ind].lbd.tiles[i].render) {
+      drawTile(file.comb[ind].lbd.tiles[i], i, area);
     }
   }
   scene.add(area);
 }
 
+//draws a single 'tile'
 function drawTile(tile, i, master) {
   let obj = createObj(file.tmds[0], tile.type, set);
   obj.translateX(-2048 * globalScale * (i % 20));
@@ -165,14 +220,16 @@ function drawTile(tile, i, master) {
   obj.rotateY((Math.PI / 2) * fixRot(tile.rotation));
   master.add(obj);
   if(tile.extraInd > -1) {
-    drawTile(file.extraTiles[tile.extraInd], i, master);
+    drawTile(file.comb[ind].lbd.extraTiles[tile.extraInd], i, master);
   }
 }
 
+//converts degrees to radians
 function degToRad(deg) {
   return deg * Math.PI / 180;
 }
 
+//inverts (flips vertex orders) for a object
 function InvertObject(obj) {
   for(let i = 0; i < obj.children.length; i++) {
     if(obj.children[i].geometry) {
@@ -184,6 +241,7 @@ function InvertObject(obj) {
   }
 }
 
+//inverts a geometry by flipping the vertex and uv-order
 function invertGeometry(geo) {
   for(let i = 0; i < geo.faces.length; i++) {
     let temp = geo.faces[i].clone();

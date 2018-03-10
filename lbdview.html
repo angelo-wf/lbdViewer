@@ -1,36 +1,37 @@
 <html>
 <head>
-<title>LBD viewer</title>
-<style>
+  <title>LBD viewer</title>
+  <style>
 
-body {
-  margin: 0;
-}
-#fixed {
-  position: fixed;
-  left: 0;
-  top: 0;
-}
+  body {
+    margin: 0;
+  }
+  #fixed {
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
 
-</style>
+  </style>
 </head>
 <body>
-<div id="fixed">
-  MOD: <input type="file" id="file">
-  TEX: <input type="file" id="tix">
-  <span id="info"></span>
-  <span id="frames"></span>
-</div>
-<canvas id="vram" width="2048" height="512" style="display: none;"></canvas>
-<script src="util.js"></script>
-<script src="three.min.js"></script>
-<script src="OrbitControls.js"></script>
-<script src="js/model.js"></script>
-<script src="js/tmdpacket.js"></script>
-<script src="js/tod.js"></script>
-<script src="js/tmdparser.js"></script>
-<script src="js/tix.js"></script>
-<script src="js/parse.js"></script>
-<script src="js/main.js"></script>
+  <div id="fixed">
+    MOD: <input type="file" id="file">
+    TEX: <input type="file" id="tix">
+    <span id="info"></span>
+    <span id="frames"></span>
+  </div>
+  <canvas id="vram" width="2048" height="512" style="display: none;"></canvas>
+  <script src="util.js"></script>
+  <script src="three.min.js"></script>
+  <script src="OrbitControls.js"></script>
+  <script src="js/lbdmom.js"></script>
+  <script src="js/tmdpacket.js"></script>
+  <script src="js/tmdobjparse.js"></script>
+  <script src="js/tod.js"></script>
+  <script src="js/tmd.js"></script>
+  <script src="js/tix.js"></script>
+  <script src="js/parse.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

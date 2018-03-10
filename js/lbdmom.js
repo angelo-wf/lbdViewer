@@ -1,12 +1,15 @@
+
+//parses a MOM file
 function MOM(b) {
+  this.type = "MOM";
+
   this.begin = b.offset;
   this.id = b.readLong();
   this.length = b.readLong();
   this.tmdOff = b.readLong();
 
-  this.tmds = [];
   b.offset = this.tmdOff + this.begin;
-  this.tmds.push(new TMD(b));
+  this.tmd = new TMD(b);
   b.offset = this.begin + 12;
   this.mosId = b.readLong();
   this.todNum = b.readLong();
@@ -19,11 +22,12 @@ function MOM(b) {
     b.offset = this.todOffs[i] + this.begin + 12;
     this.tods[i] = new TOD(b);
   }
-  this.comb = [];
-  this.comb[0] = {count: this.todNum, type: "anim", mom: this};
 }
 
+//parses a LBD file
 function LBD(b) {
+  this.type = "LBD";
+
   this.id = b.readShort();
   this.mml = b.readShort() == 1;
   this.adrOff = b.readLong();
@@ -46,9 +50,8 @@ function LBD(b) {
     this.extraTiles[i] = new LBDTile(b, this.extraOff, this.adrOff);
   }
 
-  this.tmds = [];
   b.offset = this.tmdOff + this.adrOff;
-  this.tmds.push(new TMD(b));
+  this.tileTmd = new TMD(b);
 
   this.moms = [];
 
@@ -64,18 +67,10 @@ function LBD(b) {
       b.offset = this.momOffs[i] + this.mmlOff;
       this.moms.push(new MOM(b));
     }
-    for(let i = 0; i < this.moms.length; i++) {
-      this.tmds.push(this.moms[i].tmds[0]);
-    }
-  }
-
-  this.comb = [];
-  this.comb[0] = {count: 1, type: "tiles"};
-  for(let i = 0; i < this.moms.length; i++) {
-    this.comb[i + 1] = {count: this.moms[i].todNum, type: "anim", mom: this.moms[i]};
   }
 }
 
+//parses a single 'tile', used in LBD files
 function LBDTile(b, ex, adr) {
   this.render = b.readByte() == 1;
   this.flag = b.readByte();
@@ -90,6 +85,7 @@ function LBDTile(b, ex, adr) {
   }
 }
 
+//changes tile-rotation to match rotation needed for viewing
 function fixRot(rot) {
   let fixed = [2, 3, 0, 1];
   return fixed[rot];

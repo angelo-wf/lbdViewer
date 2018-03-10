@@ -1,6 +1,8 @@
 
+//parses a TMD file (PS1 model)
 function TMD(b) {
-  //read header
+  this.type = "TMD";
+  
   this.id = b.readLong();
   this.flags = b.readLong();
   this.num = b.readLong();
@@ -54,6 +56,7 @@ function TMDObject(b, top) {
   b.offset = this.cached;
 }
 
+//turns a unsinged 16-bit int to singed
 function uToS(num) {
   if(num < 32768) {
     return num
@@ -61,6 +64,7 @@ function uToS(num) {
   return -(65536 - num);
 }
 
+//turns a unsigned 32-bit int to signed
 function uToSl(num) {
   if(num < 2147483648) {
     return num
@@ -68,14 +72,17 @@ function uToSl(num) {
   return -(4294967296 - num);
 }
 
+//turns a texture-page + uv combo to direct uv coords in the vram
 function pToC(arr, page) {
   let newX = (page & 0xf) * 128 + (arr[0]);
   let newY = ((page & 0x10) >> 4) * 256 + arr[1];
   return [newX, newY];
 }
 
+//fixes cols for handling of PS1's 0x7f7f7f neutral color instead of 0xffffff
 function fixCols(col, yes) {
   if(!yes) {
+    //if not a textured primitive, don't change colors
     return col;
   }
   let r = (col & 0xff0000) >> 16;
@@ -88,6 +95,7 @@ function fixCols(col, yes) {
   return col;
 }
 
+//scales a colors lower 7 bits to 8 bits
 function scaleCol(val) {
   val = val > 0x7f ? 0x7f : val;
   val = val & 0x7f;
