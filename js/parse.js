@@ -63,9 +63,25 @@ function doSpc() {
 }
 
 //resets the animation state
-function resetAnimState() {
+function resetAnimState(resetAnim) {
   animState.parts = [];
   animState.frame = -1;
+  animState.subFrame = 0;
+  if(resetAnim) {
+    animState.animating = false;
+    clearInterval(animState.loopRef);
+  }
+}
+
+//goes to next subframe, called ~60 times per second
+function nextSubFrame() {
+  if(file.comb && file.comb[viewState.file].type == "anim") {
+    animState.subFrame++;
+    if(animState.subFrame >= file.comb[viewState.file].mom.tods[viewState.obj].resolution) {
+      nextFrame();
+      animState.subFrame = 0;
+    }
+  }
 }
 
 //goes to the next frame

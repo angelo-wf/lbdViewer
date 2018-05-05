@@ -8,10 +8,14 @@ let viewState = {
   wire: false
 };
 let ctx = el("vram").getContext("2d"), pixelData;
-let globalScale = 1 / 2048, globalOpacity = 0.6;
+const globalScale = 1 / 2048;
+const globalOpacity = 0.6;
 let animState = {
   parts: [],
-  frame: -1
+  frame: -1,
+  subFrame: 0,
+  loopRef: 0,
+  animating: false
 };
 //add white to canvas, for solid colors
 ctx.fillStyle = "#ffffff";
@@ -60,15 +64,6 @@ el("tix").onchange = function() {
 
 //load a LBD, MOM or TMD
 function loadModel(b, type) {
-  warn = false;
-  /*if(type == 0) {
-    let tmd = new TMD(b);
-    file = {tmds: [tmd]};
-  } else if(type == 1) {
-    file = new MOM(b);
-  } else if(type == 2) {
-    file = new LBD(b);
-  }*/
   if(type == 0) {
     file = handleModel(new TMD(b));
   } else if(type == 1) {
@@ -137,16 +132,17 @@ function render() {
     let frames = file.comb[viewState.file].mom.tods[viewState.obj].frames.length;
     let cur = animState.frame + 1;
     el("frames").textContent = ", Frame: " + cur + " / " + frames;
+    el("frames").textContent += ", Animating: " + animState.animating;
   } else {
     el("frames").textContent = "";
   }
 }
 
 //re-renders the scene, recreates the mesh(es) and renders them
-function rerender() {
+function rerender(resetAnim) {
   clearScene(scene);
   //light example in three.js examples -> Minecraft example
-  resetAnimState();
+  resetAnimState(!resetAnim);
   if(!viewState.comb) {
     doObj();
   } else {
@@ -280,16 +276,16 @@ window.onkeydown = function(e) {
     case ",":
       viewState.obj--;
       viewState.obj = viewState.obj < 0 ? 0 : viewState.obj;
-      rerender();
+      rerender(true);
       break;
     case ".":
       viewState.obj++;
       viewState.obj = viewState.obj >= getMaxes()[1] ? getMaxes()[1] - 1 : viewState.obj;
-      rerender();
+      rerender(true);
       break;
     case "/":
       viewState.wire = !viewState.wire;
-      rerender();
+      rerender(true);
       break;
     case "]":
     case "'":
@@ -299,7 +295,7 @@ window.onkeydown = function(e) {
       } else {
         viewState.obj = 0;
       }
-      rerender();
+      rerender(true);
       break;
     case "[":
     case ";":
@@ -309,14 +305,14 @@ window.onkeydown = function(e) {
       } else {
         viewState.obj = 0;
       }
-      rerender();
+      rerender(true);
       break;
     case "\\":
       if(file.comb && file.comb.length > 0) {
         viewState.comb = !viewState.comb;
         viewState.file = 0;
         viewState.obj = 0;
-        rerender();
+        rerender(viewState.comb);
       } else {
         viewState.comb = false;
       }
@@ -326,5 +322,17 @@ window.onkeydown = function(e) {
         nextFrame();
       }
       break;
+    case "l":
+      if(viewState.comb && file.comb[viewState.file].type == "anim") {
+        //62.5 fps, close enough to 60
+        if(!animState.animating) {
+          animState.loopRef = setInterval(nextSubFrame, 16);
+          animState.animating = true;
+        } else {
+          clearInterval(animState.loopRef);
+          animState.animating = false;
+        }
+        render();
+      }
   }
 }
