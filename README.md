@@ -2,10 +2,12 @@
 Viewer for LBD, MOM and TMD files from the PS1 game LSD: Dream Emulator
 
 ## Running
-* Clone or download this repository
-* Clone or download [three.js](https://threejs.org)
-* Place build/three.min.js and examples/js/controls/OrbitControls.js with lbdview.html
-* Open lbdview.html in a browser
+Run the online version (Github pages) [here](https://elzo-d.github.io/lbdviewer).
+
+To run offline:
+
+* Clone this repository
+* Open index.html in a browser
 
 ## Usage
 Load a LBD, MOM or TMD file in the MOD-filechooser and a TIX file in the TEX-filechooser.
