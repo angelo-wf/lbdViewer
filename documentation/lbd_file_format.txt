@@ -1,0 +1,126 @@
+LBD file format (mostly)
+By elzo_d .
+
+A LBD file holds the level data for a part of a stage in LSD dream emulator.
+The stages in LSD are made of "tiles", placed on a square grid.
+Each LBD file holds a 20 by 20 area of the stage, either stacked vertically, like in STG00 (bright moon cottage) or horizontally like in STG03 (natural world). The horizontal pattern is like this:
+
++---+---+---+
+| 5 | 6 | 7 |
++-+-+-+-+-+-+
+  | 3 | 4 |
++-+-+-+-+-+-+
+| 0 | 1 | 2 |
++---+---+---+
+
+The LBD files also hold the data for the entities and their animation.
+A LBD file has other file formats within, these are:
+
+TMD files, which have the 3D models.
+MOM files, which seem to hold the animation data for the entities. (MOM files have a identifier for MOS, but it seems only once per MOM file.)
+MML files, a "container" for all entity related stuff.
+
+The structure is like this:
+
+LBD file:
+	Header
+	Tile layout
+	"extra" tiles (optional)
+	TMD file for the 3D models of the tiles
+	MML (optional):
+		header
+		MOM file(s) (varied amount):
+			header
+			data
+			TMD file for the entity model(s)
+
+All values are little-endian (!).
+
+
+A LBD file starts with a 32 byte header, consisting of (mostly) 32 bit values.
+
+The first value seems to be 2 16 bit values, instead of 1 32 bit one.
+
+The second value seems to always be 0x18 (24), maybe the value to subtract from certain offsets?
+
+The third value (offset 8 (0x8)) is the offset to the TMD file for the tiles, minus 24 (!)
+
+The fourth value is the total length of the TMD file for the tiles.
+
+The fifth value (offset 16 (0x10)) is the offset of the MML file. When the LBD doesn't have a MML file, it points out of bounds.
+
+The sixth value is the total length of the MML file. When the LBD doesn't have a MML file, it is 0. 
+
+The seventh value seems to be 2 16 bit values, instead of 1 32 bit one.
+
+The eight value also seems to be 2 16 bit values, instead of 1 32 bit one.
+
+
+Starting at offset 32 (0x20) is the tile layout data, for 400 tiles (20 by 20). each tile consists of 12 bytes.
+They are ordered (looking from above) left to right, bottom to top.
+
+A tile looks like this:
+
+00 00 00 00 00 00 00 00 00 00 00 00
+AA BB CC DD EE FF GG HH II JJ KK LL
+
+AA: 	00: don't draw this tile
+	01: draw this tile
+
+BB:	unknown flag, 00 or 01
+
+CC:	tile type. The type order corresponds with the order in the tile TMD.
+
+DD:	always 00 (could be part of the tile type, if it goes above 255)
+
+EE:	footstep sound and side-collision. collision with floor is automatic, but only works in levels with pits.
+	00-7F no collision
+	80-FF collision
+
+FF:	direction of tile.
+	00: normal
+	01: turned 90 degrees
+	02: turned 180 degrees
+	03: turned 270 degress
+
+GG HH:	16 bit, signed height value, higher value means lower tile
+	00 00 (0): normal
+	01 00 (1) and higher: lower
+	FF FF (-1) and lower: higher
+
+II JJ:	16 bit offset to a "extra tile" to draw, minus 24 (!). this is a tile that is drawn on the same place.
+
+KK LL:	always 00 (could be part of the extra tile offset)
+
+
+Offset 4832 (0x12E0) is the start of either the extra tiles data, if the level uses it (formatted exactly like the normal tile data) or the TMD file for the tiles.
+If there are extra tile data, the TMD comes directly after that.
+A TMD file can be recognized by the bytes 41 00 00 00 at the start.
+
+After the TMD file, there is sometimes some empty space, and then the MML file, recognized by the bytes 4D 4D 4C 20 (M M L  ). (See the offset in the LBD header.)
+
+The header of the MML files consist of 32 bit values:
+
+First the bytes 4D 4D 4C 20,
+then the amount of MOM files inside the MML file,
+then the offset(s) to those MOM files from the start of the MML file.
+
+
+MOM files can be recognized by the bytes 4D 4F 4D 20 (M O M  ).
+A MOM file has a 16 byte header, consisting of 32 bit values:
+
+First the bytes 4D 4F 4D 20,
+then the total length of the MOM file,
+then the offset from the start of the MOM file to the TMD file inside,
+then the bytes 4D 4F 53 20 (M O S  ).
+
+It could be that MOM files may contain more MOS files, in which case the header is probably going to be longer.
+
+MOM file format is unknown.
+
+
+It seems like that stuff like tunnels, direct links, and stair-floor swapping is hardcoded. Entity position seems hardcoded as well, but might be in the MOM data.
+
+
+
+
