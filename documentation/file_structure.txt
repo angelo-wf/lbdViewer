@@ -1,0 +1,79 @@
+LSD: Dream Emulator
+
+File structure
+
+
+The root of the disk contains 2 files, along with the CDI folder:
+SLPS_015.56 - the main executable for the game.
+SYSTEM.CNF - execution info for the game.
+
+The CDI folder contains all the data for the game, in 21 subfolders:
+CARD, ETC, FILM, IMG1, IMG2, SND, ZDUMMY and 14 folders named STG00 to STG13
+
+CARD contains 18 files, mainly menu dialogs:
+FILEICN1.TIM - the icon for the save-data on the memory card.
+FONTICON.TIM - a font.
+16 TIM-textures, containing the menu dialogs, used for saving and loading.
+
+ETC contains 23 files, a bunch of misc. files:
+ASMK.STR - a movie used for the splash-screen.
+ASMKLOG.TIM - a unused logo.
+ASMKLOGO.TIM - the LSD logo.
+DREAME5.TMD - a model for a semi-transparent box (gray, unused?).
+DREAMER.TMD - 3 models:
+  a quad, used for clouds,
+  another semi-transparent box (brown, also unused?)
+  a quad, used for stars (?).
+ENDING.STR - the ending movie, that plays after 365 days.
+ETC.TIM - another font, sun sprites, cloud texture and stars texture.
+  Has 4 palettes, one for each of the sections.
+ETC2.TIM - a third font.
+ETCSE.VB and ETCSE.VH - form a sample bank, probably the sound effects(?).
+FONTICON.TIM - a fourth font.
+HGRAPH.TIM - the dream-chart texture.
+OSDLOGO.TIM - the OSD splash-screen.
+SYMDOG.MOM - an unused model + 2 animations for a dog.
+SYMSPY.MOM - the model + animation for the gray man.
+TITLE.TIM - the menu-screen background.
+7 STR-movies, named OPENINGA.STR to OPENINGG.STR, for the 7 opening videos.
+
+FILM contains 30 files, all movies:
+6 STR-movies, named EVENT1.STR to EVENT6.STR, used for special in-game events.
+24 STR-movies, used for video-dreams.
+
+IMG1 and IMG2, containing 24 files each, all TIM textures.
+Used for text-dreams.
+
+SND contains 16 files, 8 VB+VH pairs.
+Each is a sample-bank, randomly combined with the 5 tracks for a stage.
+
+ZDUMMY contains 1 file, a garbage movie file ZDUMMY.STR
+Used for getting the game closer to the center of the disk, for faster loading.
+
+STG00 to STG13 are used for the stage data:
+STG00: Bright moon cottage
+STG01: Pit and temple
+STG02: Kyoto
+STG03: The natural world
+STG04: Happy town
+STG05: The violence district
+STG06: Moonlight tower
+STG07: Temple dojo
+STG08: Flesh tunnels
+STG09: Clockwork tunnels
+STG10: Long hallway
+STG11: Sun faces heave
+STG12: Black space
+STG13: Monument park
+
+Each stage folder contains:
+5 SEQ-music sequences, named BGA.SEQ to BGE.SEQ,
+  randomly combined with a sample bank in SND, to form the music of the stage.
+4 TIX-texture sets, named TEXA.TIX to TEXD.tix:
+  TEXA are the normal textures,
+  TEXB are the kanji textures,
+  TEXC are the downer textures,
+  TEXD are the sexual textures.
+Some amount of LBD-files, named M000.LBD, M001.LBD...,
+  sometimes sorted over subfolders called N1, N2....
+  These contain the lay-out data, models and entity data for each stage.
