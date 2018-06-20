@@ -1,0 +1,25 @@
+LSD: Dream Emulator
+
+
+MOM file format
+
+A MOM file contains a TMD for for a model,
+together with a MOS file with animations for it.
+
+Structure:
+byte[4] - identifier: "MOM " (4D 4F 4D 20)
+Uint - length of MOM file
+Uint - offset to TMD file (from start of MOM-file)
+MOS - MOS file
+TMD - model file
+
+
+MOS file format
+
+A MOS file contains multiple TOD-animations for a model.
+
+Structure:
+byte[4] - identifier: "MOS " (4D 4F 53 20)
+Uint - amount of TOD-files ($a)
+Uint[$a] - offsets to each of the TOD files (from start of MOS file)
+TOD[$a] - the TOD-files

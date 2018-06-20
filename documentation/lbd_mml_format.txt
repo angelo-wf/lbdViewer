@@ -1,0 +1,58 @@
+LSD: Dream Emulator
+
+
+LBD format
+
+A LBD file contains part of a stage in LSD.
+The stages are made up of 'tiles', placed according to the lay-out data.
+The tiles can also reference 'extra tiles', to be placed at the same spot.
+Each tile's model is saved in the 'tiles'-TMD file
+The file also contains a MML file, for the entities in that part of the stage.
+
+Structure:
+Ushort - identifier(?, always 1)
+Ushort - 1 if the file contains a MML, 0 otherwise.
+Uint - offset for certain addresses(?, always 24)
+Uint - offset to 'tiles'-TMD file, minus 24 (adr. offset?)
+  (from start of LBD file)
+Uint - length of 'tiles'-TMD file
+Uint - offset to MML file (from start of LBD file,
+  points outside of file if it doesn't have a MML file)
+Uint - size of MML file (0 if the file doesn't have a MML file)
+Ushort - ?, always 74
+Ushort - amount of 'extra tiles' ($a)
+Ushort - width(?, always 20)
+Ushort - height(?, always 20)
+LBDtile[400] - The tile layout for this stage-part
+  (20 by 20, ordered left to right, bottom to top)
+LBDtile[$a] - 'extra tiles', referenced from the tile layout data
+TMD - the 'tiles'-TMD
+byte[?] - filler bytes (all 00)
+MML[0-1] - the entities-data
+
+
+LBD tile format
+
+Structure:
+byte - 1 if the tile needs to be placed, 0 otherwise
+byte - ?, always 0 or 1
+Ushort - tile number, a index into the tile-TMD
+byte - collision and footstep sound:
+  below 0x80: no collision
+  above 0x80: collision (with walls, floor collision is automatic)
+byte - rotation, 0-3 for 0, 90, 180, 270 degrees rotated
+short - (signed) height, 0 is default,
+  lower (-1, -2...) is higher, higher (1, 2...) is lower.
+Uint - offset to 'extra tile', minus 24 (adr. offset?),
+  0 if no extra tile is needed
+
+
+MML format
+
+A MML file contains all the entities in a stage-part.
+
+Structure:
+byte[4] - identifier: "MML " (4D 4D 4C 20)
+Uint - amount of MOM files ($b)
+Uint[$b] - offsets to the MOM files (from start of MML file)
+MOM[$b] - the MOM files

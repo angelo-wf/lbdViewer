@@ -1,0 +1,24 @@
+LSD: Dream Emulator
+
+
+TIX format
+
+A TIX file contains a bunch of TIM textures,
+which are all loaded in VRAM at once.
+The file consists of a bunch of TIX chunks, each with TIM textures inside.
+
+Structure:
+Uint - amount of TIX-chunks ($a)
+Uint[$a] - offsets to the TIX-chunks (from start of TIX file)
+Uint[$a] - sizes of the TIX-chunks
+byte[?] - filler bytes (all 00)
+TIXchunk[$a] - The TIX-chunks
+
+
+TIX chunk format
+
+Structure:
+Uint - amount of TIM files ($b)
+Uint[$b] - offsets to the TIM files (from start of TIX chunk)
+TIM[$b] - the TIM textures
+byte[?] - filler bytes (00)

@@ -23,7 +23,9 @@ Load a LBD, MOM or TMD file in the MOD-filechooser and a TIX file in the TEX-fil
 * Drag with the right mouse button (or use the arrow keys) to pan.
 
 ## Documentation
-The "lbd_file_format.txt" file in the documentation folder contains the original research on the LBD files, done by me back in 2015. However, additional info was used from [figglewatts](https://github.com/Figglewatts) for the creation of this viewer.
+The "OLD_lbd_file_format.txt" file in the documentation folder contains the original research on the LBD files, done by me back in 2015. However, additional info was used from [figglewatts](https://github.com/Figglewatts) for the creation of this viewer and the other documentation.
+
+The "file_structure.txt" file contains info over the files, file structure and file types in the game. The "\*\_format.txt" files contain info over the game's custom file formats.
 
 ## Credits
 Thanks to figglewatts, his [libLSD](https://github.com/figglewatts/libLSD) and his [LSDview](https://github.com/figglewatts/LSDview) for additional info on the file formats.

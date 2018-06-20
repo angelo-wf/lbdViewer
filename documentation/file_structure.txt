@@ -1,7 +1,31 @@
 LSD: Dream Emulator
 
-File structure
 
+File types
+
+The data for the game uses the following official PS1 formats:
+.TMD - 3d-model format.
+.TIM - texture format.
+.STR - streaming data (movies).
+  Seems to repeatedly contain 7 chunks, followed by 1 chunk of audio(?) data.
+.VB - Waveform audio samples body.
+.VH - Waveform audio samples header.
+.SEQ - music sequence format.
+.TOD - animation data (only seen as part of a MOS file).
+
+It also uses the following custom formats:
+.MOS - contains TOD-animations for a model (only seen a part of a MOM file).
+.MOM - contains a TMD model, together with a MOS-animation set.
+.TIX - contains multiple TIM-textures, to be all loaded into VRAM at once.
+.MML - contains entity data, with 1 MOM file for each
+  (only seen as part of a LBD file).
+.LBD - contains a section of a level:
+  the TMD-models for it,
+  the layout data,
+  the entities in a (optional) MML file.
+
+
+File structure
 
 The root of the disk contains 2 files, along with the CDI folder:
 SLPS_015.56 - the main executable for the game.
@@ -22,13 +46,13 @@ ASMKLOGO.TIM - the LSD logo.
 DREAME5.TMD - a model for a semi-transparent box (gray, unused?).
 DREAMER.TMD - 3 models:
   a quad, used for clouds,
-  another semi-transparent box (brown, also unused?)
+  another semi-transparent box (brown, also unused?),
   a quad, used for stars (?).
 ENDING.STR - the ending movie, that plays after 365 days.
 ETC.TIM - another font, sun sprites, cloud texture and stars texture.
   Has 4 palettes, one for each of the sections.
 ETC2.TIM - a third font.
-ETCSE.VB and ETCSE.VH - form a sample bank, probably the sound effects(?).
+ETCSE.VB & ETCSE.VH - form a sample bank, probably the sound effects(?).
 FONTICON.TIM - a fourth font.
 HGRAPH.TIM - the dream-chart texture.
 OSDLOGO.TIM - the OSD splash-screen.
@@ -44,27 +68,33 @@ FILM contains 30 files, all movies:
 IMG1 and IMG2, containing 24 files each, all TIM textures.
 Used for text-dreams.
 
-SND contains 16 files, 8 VB+VH pairs.
+SND contains 16 files, 8 VB & VH pairs.
 Each is a sample-bank, randomly combined with the 5 tracks for a stage.
 
 ZDUMMY contains 1 file, a garbage movie file ZDUMMY.STR
 Used for getting the game closer to the center of the disk, for faster loading.
 
 STG00 to STG13 are used for the stage data:
-STG00: Bright moon cottage
-STG01: Pit and temple
-STG02: Kyoto
-STG03: The natural world
-STG04: Happy town
-STG05: The violence district
-STG06: Moonlight tower
-STG07: Temple dojo
-STG08: Flesh tunnels
-STG09: Clockwork tunnels
-STG10: Long hallway
-STG11: Sun faces heave
-STG12: Black space
-STG13: Monument park
+STG00: Bright moon cottage - Wh
+STG01: Pit and temple - W3
+STG02: Kyoto - W6
+STG03: The natural world - W16
+STG04: Happy town - W6
+STG05: The violence district - W5
+STG06: Moonlight tower - Wh
+STG07: Temple dojo - W5
+STG08: Flesh tunnels - W1
+STG09: Clockwork tunnels - W1
+STG10: Long hallway - W3
+STG11: Sun faces heave - W4
+STG12: Black space - W4
+STG13: Monument park - W2
+
+Wx indicates how the stage's LBD files are laid out:
+  Wh means that they are all placed on the same spot, used in vertical stages.
+  Wx, with x a number, means that so many are placed side by side.
+  They are placed left to right, bottom to top, with each second row from
+  the bottom offset to the left by half the size of a LBD-file's content
 
 Each stage folder contains:
 5 SEQ-music sequences, named BGA.SEQ to BGE.SEQ,
