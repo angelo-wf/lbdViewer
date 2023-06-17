@@ -2,7 +2,7 @@
 Viewer for LBD, MOM and TMD files from the PS1 game LSD: Dream Emulator
 
 ## Running
-Run the online version (Github pages) [here](https://elzo-d.github.io/lbdViewer/).
+Run the online version (Github pages) [here](https://angelo-wf.github.io/lbdViewer/).
 
 To run offline:
 
